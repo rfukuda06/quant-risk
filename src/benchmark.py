@@ -7,7 +7,7 @@ only in the test suite as independent referees.
 import numpy as np
 import pandas as pd
 
-from src.constants import TRADING_DAYS, daily_rf
+from src.constants import TRADING_DAYS, ZERO_TOL, daily_rf
 
 
 def _covariance(x: np.ndarray, y: np.ndarray) -> float:
@@ -16,18 +16,30 @@ def _covariance(x: np.ndarray, y: np.ndarray) -> float:
 
 
 def correlation(portfolio: pd.Series, benchmark: pd.Series) -> float:
-    """Pearson correlation: Cov(p, b) / (std(p) * std(b)), ddof=1 throughout."""
+    """Pearson correlation: Cov(p, b) / (std(p) * std(b)), ddof=1 throughout.
+
+    Returns NaN when either series is constant — never inf.
+    """
     p = np.asarray(portfolio, dtype=float)
     b = np.asarray(benchmark, dtype=float)
-    return _covariance(p, b) / (p.std(ddof=1) * b.std(ddof=1))
+    denom = p.std(ddof=1) * b.std(ddof=1)
+    if denom < ZERO_TOL**2:
+        return float("nan")
+    return _covariance(p, b) / denom
 
 
 def beta(portfolio: pd.Series, benchmark: pd.Series, rf_annual: float = 0.0) -> float:
-    """CAPM slope on excess returns: Cov(x, y) / Var(x)."""
+    """CAPM slope on excess returns: Cov(x, y) / Var(x).
+
+    Returns NaN when the benchmark is constant — never inf.
+    """
     rf_d = daily_rf(rf_annual)
     y = np.asarray(portfolio, dtype=float) - rf_d
     x = np.asarray(benchmark, dtype=float) - rf_d
-    return _covariance(x, y) / _covariance(x, x)
+    var_x = _covariance(x, x)
+    if var_x < ZERO_TOL**2:
+        return float("nan")
+    return _covariance(x, y) / var_x
 
 
 def alpha_daily(portfolio: pd.Series, benchmark: pd.Series, rf_annual: float = 0.0) -> float:

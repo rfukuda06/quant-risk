@@ -3,14 +3,8 @@
 import numpy as np
 import pandas as pd
 
-from src.constants import TRADING_DAYS, daily_rf
+from src.constants import TRADING_DAYS, ZERO_TOL, daily_rf
 from src.returns import equity_curve
-
-# A constant return series should have std exactly 0, but floating-point
-# summation leaves noise ~1e-19 at some lengths (e.g. std of [0.001]*252),
-# which would turn the NaN guards below into ~1e17 Sharpe values. Real daily
-# return stds sit many orders of magnitude above this cutoff.
-ZERO_TOL = 1e-10
 
 
 def daily_volatility(returns) -> float:

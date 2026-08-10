@@ -49,3 +49,12 @@ def test_perfectly_scaled_portfolio():
     port = 2 * bench
     assert beta(port, bench) == pytest.approx(2.0)
     assert r_squared(port, bench) == pytest.approx(1.0)
+
+
+def test_constant_benchmark_degenerate_cases_are_nan_not_error():
+    port = pd.Series(np.random.default_rng(2).normal(0.0005, 0.01, 60))
+    for const in (0.0, 0.001):  # exact-zero variance and FP-noise variance
+        flat = pd.Series([const] * 60)
+        assert np.isnan(beta(port, flat))
+        assert np.isnan(correlation(port, flat))
+        assert np.isnan(r_squared(port, flat))
