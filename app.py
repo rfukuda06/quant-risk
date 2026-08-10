@@ -13,7 +13,7 @@ DEFAULT_SAMPLE = Path(__file__).parent / "data" / "sample_real.csv"
 EXPLAIN_SUMMARY = """
 - **Total return** compounds every daily return.
 - **Annualized return** is the geometric (CAGR) rate that would compound to the same total over a 252-day year.
-- **Sharpe** is mean daily excess return over its standard deviation, annualized by sqrt(252).
+- **Sharpe** is mean daily excess return over its standard deviation, annualized by √252.
 - **Sortino** replaces the denominator with downside deviation, penalizing only returns below the target.
 - **Volatility** is the annualized standard deviation of daily returns.
 - **Max drawdown** is the worst peak-to-trough loss of the equity curve.
@@ -21,8 +21,8 @@ EXPLAIN_SUMMARY = """
 - **Alpha** is the CAPM regression intercept (annualized ×252) — the average return not explained by benchmark exposure.
 """
 
-EXPLAIN_PERFORMANCE = """
-The equity curve shows the growth of $1: V_t = V_{t-1}(1 + r_t). Returns
+EXPLAIN_PERFORMANCE = r"""
+The equity curve shows the growth of \$1: $V_t = V_{t-1}(1 + r_t)$. Returns
 compound — the order-independent product, not the sum. Comparing the two lines
 shows out/under-performance cumulatively, but says nothing yet about how much
 risk was taken to achieve it.
@@ -41,8 +41,8 @@ EXPLAIN_BENCHMARK = """
 """
 
 EXPLAIN_MC = """
-Treat history as ONE sample from an assumed return process: Normal(mu_hat,
-sigma_hat²) fitted to the observed mean and standard deviation. Simulate 10,000
+Treat history as ONE sample from an assumed return process: Normal(μ̂, σ̂²)
+fitted to the observed mean and standard deviation. Simulate 10,000
 alternate histories of the same length, compute each one's Sharpe with the same
 formula, and look at the spread: even with the process fixed, a finite sample
 can produce very different measured Sharpes. Caveats: real returns are not
@@ -89,7 +89,7 @@ if uploaded is None:
 else:
     st.caption(
         "Type: uploaded CSV  \n"
-        f"`{uploaded.name}` — portfolio_return vs benchmark_return  \n"
+        f"`{uploaded.name}` — `portfolio_return` vs `benchmark_return`  \n"
         f"{len(df)} rows  \n"
         f"{df.index[0].date()} to {df.index[-1].date()}"
     )
