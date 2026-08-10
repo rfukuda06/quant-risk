@@ -85,6 +85,17 @@ st.sidebar.caption(f"{len(df)} rows, {df.index[0].date()} to {df.index[-1].date(
 for m in messages:
     (st.sidebar.warning if m.severity == "warning" else st.sidebar.info)(m.text)
 
+if uploaded is None:
+    st.caption(
+        "**Data: bundled sample** — AAPL/MSFT/NVDA/AMZN equal-weight portfolio vs SPY benchmark · "
+        f"{len(df)} rows, {df.index[0].date()} to {df.index[-1].date()}"
+    )
+else:
+    st.caption(
+        f"**Data: uploaded CSV** `{uploaded.name}` — portfolio_return vs benchmark_return · "
+        f"{len(df)} rows, {df.index[0].date()} to {df.index[-1].date()}"
+    )
+
 port, bench = df["portfolio"], df["benchmark"]
 
 
