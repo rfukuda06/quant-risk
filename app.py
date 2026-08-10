@@ -73,26 +73,26 @@ except ValidationError as e:
     st.stop()
 
 if uploaded is None:
-    st.sidebar.caption("Using the bundled sample: AAPL/MSFT/NVDA/AMZN equal-weight vs SPY, 2022–2024.")
-st.sidebar.caption(f"{len(df)} rows, {df.index[0].date()} to {df.index[-1].date()}")
-for m in messages:
-    (st.sidebar.warning if m.severity == "warning" else st.sidebar.info)(m.text)
-
-st.markdown("#### Data")
-if uploaded is None:
-    st.caption(
+    data_caption = (
         "Type: default bundled sample  \n"
         "AAPL/MSFT/NVDA/AMZN equal-weight portfolio vs SPY benchmark  \n"
         f"{len(df)} rows  \n"
         f"{df.index[0].date()} to {df.index[-1].date()}"
     )
 else:
-    st.caption(
+    data_caption = (
         "Type: uploaded CSV  \n"
         f"`{uploaded.name}` — `portfolio_return` vs `benchmark_return`  \n"
         f"{len(df)} rows  \n"
         f"{df.index[0].date()} to {df.index[-1].date()}"
     )
+st.sidebar.markdown("#### Data")
+st.sidebar.caption(data_caption)
+for m in messages:
+    (st.sidebar.warning if m.severity == "warning" else st.sidebar.info)(m.text)
+
+st.markdown("#### Data")
+st.caption(data_caption)
 
 port, bench = df["portfolio"], df["benchmark"]
 
