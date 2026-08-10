@@ -56,7 +56,7 @@ st.title("Quantitative Risk & Performance Analyzer")
 
 # ---------- Sidebar ----------
 st.sidebar.header("Data & Settings")
-with st.sidebar.form("data_settings"):
+with st.sidebar.form("data_settings", enter_to_submit=False):
     uploaded = st.file_uploader(
         "Upload returns CSV",
         type="csv",
