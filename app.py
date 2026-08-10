@@ -51,19 +51,52 @@ understates true uncertainty. It is a demonstration of sampling error, not a
 forecast.
 """
 
+HELP_UPLOAD = """
+**Required CSV format**
+- Columns (case-insensitive): `date`, `portfolio_return`, `benchmark_return` — extra columns are ignored
+- One row per trading day; dates like `2024-01-31` (any unambiguous format parses)
+- Returns as **decimals**, not percent: `0.0021` means 0.21%
+- At least 60 rows; no duplicate dates
+- Out-of-order rows are sorted automatically; rows with missing values are dropped with a warning
+- Values that look like percentages (median |return| > 5%) trigger a warning — nothing is auto-converted
+"""
+
+HELP_RF = """
+The annual return of a riskless alternative (e.g. Treasury bills). It is
+converted to a daily rate as rate/252 and subtracted from daily returns
+before risk-adjusting.
+
+**Affects:** Sharpe, Sortino, the rolling Sharpe chart, alpha, and the
+Monte Carlo Sharpe distribution. (Beta receives it too, but a constant
+shift cancels in the regression, so beta does not move.)
+
+**Does not affect:** total/annualized return, volatility, drawdown, the
+equity curve, correlation, or R².
+"""
+
+HELP_WINDOW = """
+How many trading days each moving window contains when metrics are
+recomputed through time.
+
+**Affects:** only the two rolling charts in *Risk Through Time* — rolling
+volatility and rolling Sharpe. The first window−1 days are blank by design
+(no partial windows). Longer windows are smoother but react more slowly;
+shorter ones are noisier but more responsive.
+
+**Does not affect:** any headline metric or other chart.
+"""
+
 st.set_page_config(page_title="Quantitative Risk & Performance Analyzer", layout="wide")
 st.title("Quantitative Risk & Performance Analyzer")
 
 # ---------- Sidebar ----------
 st.sidebar.header("Data & Settings")
 with st.sidebar.form("data_settings", enter_to_submit=False):
-    uploaded = st.file_uploader(
-        "Upload returns CSV",
-        type="csv",
-        help="Columns: date, portfolio_return, benchmark_return — daily returns as decimals (0.0021 = 0.21%)",
+    uploaded = st.file_uploader("Upload returns CSV", type="csv", help=HELP_UPLOAD)
+    rf_percent = st.number_input(
+        "Risk-free rate (annual, %)", value=0.0, step=0.25, format="%.2f", help=HELP_RF
     )
-    rf_percent = st.number_input("Risk-free rate (annual, %)", value=0.0, step=0.25, format="%.2f")
-    window = st.selectbox("Rolling window (days)", [30, 60, 90], index=1)
+    window = st.selectbox("Rolling window (days)", [30, 60, 90], index=1, help=HELP_WINDOW)
     st.form_submit_button("Apply")
 rf_annual = rf_percent / 100
 
