@@ -87,12 +87,16 @@ for m in messages:
 
 if uploaded is None:
     st.caption(
-        "**Data: bundled sample** — AAPL/MSFT/NVDA/AMZN equal-weight portfolio vs SPY benchmark · "
+        "**Data**  \n"
+        "Type: default bundled sample  \n"
+        "AAPL/MSFT/NVDA/AMZN equal-weight portfolio vs SPY benchmark · "
         f"{len(df)} rows, {df.index[0].date()} to {df.index[-1].date()}"
     )
 else:
     st.caption(
-        f"**Data: uploaded CSV** `{uploaded.name}` — portfolio_return vs benchmark_return · "
+        "**Data**  \n"
+        "Type: uploaded CSV  \n"
+        f"`{uploaded.name}` — portfolio_return vs benchmark_return · "
         f"{len(df)} rows, {df.index[0].date()} to {df.index[-1].date()}"
     )
 
