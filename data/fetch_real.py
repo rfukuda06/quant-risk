@@ -1,5 +1,5 @@
 """One-time script that produced data/sample_real.csv. yfinance is NOT a
-project dependency; to re-run: uv run --with yfinance python data/fetch_real.py
+project dependency; to re-run: uv run --with yfinance --no-project python data/fetch_real.py
 
 Portfolio: equal-weight daily mean of AAPL, MSFT, NVDA, AMZN daily returns
 (daily-rebalanced equal weighting). Benchmark: SPY. Adjusted closes,
