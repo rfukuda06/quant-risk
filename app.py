@@ -121,12 +121,12 @@ else:
         f"{len(df)} rows  \n"
         f"{df.index[0].date()} to {df.index[-1].date()}"
     )
-st.sidebar.markdown("#### Data")
+st.sidebar.markdown("#### Current Data")
 st.sidebar.caption(data_caption)
 for m in messages:
     (st.sidebar.warning if m.severity == "warning" else st.sidebar.info)(m.text)
 
-st.markdown("#### Data")
+st.markdown("#### Current Data")
 st.caption(data_caption)
 
 port, bench = df["portfolio"], df["benchmark"]
