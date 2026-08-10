@@ -21,8 +21,8 @@ EXPLAIN_SUMMARY = """
 - **Alpha** is the CAPM regression intercept (annualized ×252) — the average return not explained by benchmark exposure.
 """
 
-EXPLAIN_PERFORMANCE = r"""
-The equity curve shows the growth of \$1: $V_t = V_{t-1}(1 + r_t)$. Returns
+EXPLAIN_PERFORMANCE = """
+The equity curve shows the growth of $1: Vₜ = Vₜ₋₁(1 + rₜ). Returns
 compound — the order-independent product, not the sum. Comparing the two lines
 shows out/under-performance cumulatively, but says nothing yet about how much
 risk was taken to achieve it.
