@@ -56,13 +56,15 @@ st.title("Quantitative Risk & Performance Analyzer")
 
 # ---------- Sidebar ----------
 st.sidebar.header("Data & Settings")
-uploaded = st.sidebar.file_uploader(
-    "Upload returns CSV",
-    type="csv",
-    help="Columns: date, portfolio_return, benchmark_return — daily returns as decimals (0.0021 = 0.21%)",
-)
-rf_percent = st.sidebar.number_input("Risk-free rate (annual, %)", value=0.0, step=0.25, format="%.2f")
-window = st.sidebar.selectbox("Rolling window (days)", [30, 60, 90], index=1)
+with st.sidebar.form("data_settings"):
+    uploaded = st.file_uploader(
+        "Upload returns CSV",
+        type="csv",
+        help="Columns: date, portfolio_return, benchmark_return — daily returns as decimals (0.0021 = 0.21%)",
+    )
+    rf_percent = st.number_input("Risk-free rate (annual, %)", value=0.0, step=0.25, format="%.2f")
+    window = st.selectbox("Rolling window (days)", [30, 60, 90], index=1)
+    st.form_submit_button("Apply")
 rf_annual = rf_percent / 100
 
 source = uploaded if uploaded is not None else DEFAULT_SAMPLE
