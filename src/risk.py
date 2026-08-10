@@ -56,3 +56,38 @@ def sortino_ratio(returns, rf_annual: float = 0.0) -> float:
         return float("nan")
     excess = np.asarray(returns, dtype=float) - daily_rf(rf_annual)
     return float(excess.mean() / dd * np.sqrt(TRADING_DAYS))
+
+
+def drawdown_series(returns: pd.Series) -> pd.Series:
+    """Drawdown through time: V_t / P_t - 1 with P_t = max(V_0, ..., V_t).
+
+    The running peak includes the starting value V_0 = 1 (clip), so a
+    first-day loss already counts as a drawdown. Always <= 0.
+    """
+    curve = equity_curve(returns)
+    peak = curve.cummax().clip(lower=1.0)
+    return curve / peak - 1
+
+
+def max_drawdown(returns: pd.Series) -> float:
+    """Most negative drawdown reached."""
+    return float(drawdown_series(returns).min())
+
+
+def current_drawdown(returns: pd.Series) -> float:
+    """Drawdown at the final observation."""
+    return float(drawdown_series(returns).iloc[-1])
+
+
+def rolling_volatility(returns: pd.Series, window: int) -> pd.Series:
+    """Annualized rolling volatility; the first window-1 points are NaN gaps."""
+    return returns.rolling(window, min_periods=window).std(ddof=1) * float(np.sqrt(TRADING_DAYS))
+
+
+def rolling_sharpe(returns: pd.Series, window: int, rf_annual: float = 0.0) -> pd.Series:
+    """Annualized rolling Sharpe; NaN where the rolling std is zero."""
+    excess = returns - daily_rf(rf_annual)
+    mean = excess.rolling(window, min_periods=window).mean()
+    std = excess.rolling(window, min_periods=window).std(ddof=1)
+    std = std.mask(std < ZERO_TOL)
+    return mean / std * float(np.sqrt(TRADING_DAYS))
