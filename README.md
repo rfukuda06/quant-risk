@@ -24,54 +24,47 @@ three-year sample (an AAPL/MSFT/NVDA/AMZN equal-weight portfolio against SPY,
 
 ## Key components
 
-The dashboard is ordered as a chain of questions, each section answering
-something the previous one cannot.
+The dashboard is a chain of questions — each section answers something the
+previous one cannot:
 
-**1. Summary metrics — the headline numbers.**
-Two rows of at-a-glance figures: total and annualized (CAGR) return, Sharpe,
-Sortino, annualized volatility, max drawdown, beta, and alpha. Everything here
-is recomputed live from the loaded returns; the sections below unpack where
-each number comes from and what it can and cannot tell you.
+| | Section | Question it answers | What's computed |
+|---|---|---|---|
+| 1 | **Summary metrics** | The headlines, at a glance | Total & annualized (CAGR) return, Sharpe, Sortino, volatility, max drawdown, beta, alpha |
+| 2 | **Portfolio performance** | Did it make money? | Equity curve — growth of $1, portfolio vs benchmark — plus best/worst day |
+| 3 | **Risk through time** | What did the ride look like? | Drawdown (realized peak-to-trough loss), rolling volatility, rolling Sharpe |
+| 4 | **Benchmark analysis** | Skill, or just market exposure? | Hand-rolled CAPM: correlation, beta, R², and alpha (the return the market can't explain) |
+| 5 | **Monte Carlo** | How much should you trust these numbers? | 10,000 simulated same-length histories → the sampling distribution of the Sharpe ratio |
 
-**2. Portfolio performance — did it make money?**
-The equity curve compounds daily returns into the growth of $1 invested
-(Vₜ = Vₜ₋₁(1 + rₜ)) for the portfolio and the benchmark side by side, with
-best-day / worst-day callouts. Compounding — the product of returns, not the
-sum — is the whole story here. But a return figure alone says nothing about
-how much risk was taken to earn it, which is the next section's job.
+Upstream of all five, a validation layer vets every CSV — required columns,
+unique parseable dates, decimal-scale values, ≥ 60 rows — before any metric
+is computed.
 
-**3. Risk through time — what did the ride look like?**
-Volatility summarizes the typical size of daily moves, but two portfolios with
-identical volatility can have very different worst losses — so the drawdown
-chart tracks realized peak-to-trough losses through time. The rolling
-volatility and rolling Sharpe charts then recompute both inside a moving
-window, showing that neither risk nor risk-adjusted performance is constant.
-Knowing the risk still doesn't say whether the returns were earned by the
-strategy or simply borrowed from market exposure.
+## Tests
 
-**4. Benchmark analysis — skill or just market exposure?**
-A hand-rolled CAPM regression decomposes portfolio returns against the
-benchmark: correlation measures direction of co-movement, beta measures how
-hard the portfolio leans on benchmark moves, R² measures how much of the
-variance the benchmark explains, and alpha is what's left over — the average
-return market exposure cannot account for. Alpha is an estimate with sampling
-error, not proof of skill — which raises the final question.
+```bash
+uv pip install -r requirements-dev.txt
+.venv/bin/pytest
+```
 
-**5. Monte Carlo — how much should you trust these numbers?**
-The measured Sharpe ratio is one draw from a sampling distribution. This
-section fits Normal(μ̂, σ̂²) to the observed returns, simulates 10,000
-alternate histories of the same length, computes each one's Sharpe with the
-exact same formula, and plots the spread: on the bundled three-year sample the
-simulated Sharpes have a standard deviation of about 0.58. That is the
-project's closing point — headline risk-adjusted numbers carry real
-statistical uncertainty even with years of daily data.
+The 54-test suite works in three layers:
 
-Upstream of all five sections sits a strict validation layer: every CSV is
-checked for required columns, parseable and unique dates, numeric
-decimal-scale values, and a 60-row minimum before any metric is computed, with
-warnings for suspect data (percent-scale values, >50% daily moves).
+- **Hand-computed known answers** — every formula is checked against small
+  worked examples (+10% then −10% must equal exactly −1%), so a wrong sign,
+  a ddof slip, or a bad annualization fails immediately.
+- **Independent referees** — the hand-rolled CAPM and correlation are compared
+  against `scipy.stats.linregress` and `np.corrcoef` at 1e-12 tolerance; the
+  math must agree with libraries the source code never imports.
+- **Behavioral and end-to-end** — edge cases (zero volatility → NaN, never
+  inf; malformed CSVs → clean user-facing errors; seeded Monte Carlo
+  determinism) plus a ground-truth recovery test: the pipeline must
+  re-estimate the synthetic generator's known beta 1.3, alpha 2%/yr, and
+  R² 0.75 from its own output.
 
 ## Input format
+
+The app works out of the box with a bundled default dataset
+(AAPL/MSFT/NVDA/AMZN equal-weight vs SPY, 2022–2024); upload your own CSV in
+the sidebar to analyze your data instead. The file needs:
 
 | column | meaning |
 |---|---|
@@ -83,30 +76,6 @@ At least 60 rows. The loader sorts unordered rows, drops incomplete rows with
 a warning, warns when values look like percentages, and rejects duplicate or
 unparseable dates.
 
-## Tests
-
-```bash
-uv pip install -r requirements-dev.txt
-.venv/bin/pytest
-```
-
-Three layers: hand-computed known answers, scipy/pandas referee cross-checks,
-and behavioral/edge tests (including an end-to-end check that the pipeline
-recovers the synthetic sample's known beta and alpha).
-
-## Sample data provenance
-
-- `data/sample_synthetic.csv` — generated by `data/generate_synthetic.py`
-  (seeded; known ground truth: beta 1.3, alpha 2%/yr, R² 0.75).
-- `data/sample_real.csv` — produced once by `data/fetch_real.py` (yfinance,
-  not a dependency) and committed as a static file.
-
-## Conventions
-
-Returns are decimals; every std is sample std (ddof=1); annualization uses 252
-trading days; risk-free rate converts as rf/252; ratios with zero denominators
-report NaN, never inf. Full details: `docs/superpowers/specs/`.
-
 ## Run it locally
 
 The [live demo](https://rfukuda06-quant-risk-app-r2epvs.streamlit.app/) above
@@ -117,7 +86,3 @@ uv venv .venv
 uv pip install -r requirements.txt
 .venv/bin/streamlit run app.py
 ```
-
-The dashboard opens preloaded with the bundled real sample
-(AAPL/MSFT/NVDA/AMZN equal-weight vs SPY, 2022–2024). Upload your own CSV to
-replace it.
