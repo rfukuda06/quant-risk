@@ -8,9 +8,13 @@ Every formula (CAGR, volatility, Sharpe, Sortino, drawdown, CAPM beta/alpha/R²,
 the Monte Carlo simulation) is implemented explicitly in numpy/pandas —
 scipy appears only in the test suite as an independent cross-check.
 
-![Dashboard — summary metrics and equity curve](docs/screenshots/dashboard-overview.png)
+**[▶ Try the live demo](https://rfukuda06-quant-risk-app-r2epvs.streamlit.app/)** — no setup required.
 
-![Monte Carlo Sharpe sampling-uncertainty section](docs/screenshots/monte-carlo.png)
+![Dashboard overview — summary metrics and equity curve](docs/screenshots/dashboard-overview.png)
+
+![Risk through time — drawdown and rolling metrics](docs/screenshots/risk-through-time.png)
+
+![Benchmark analysis and Monte Carlo Sharpe uncertainty](docs/screenshots/benchmark-monte-carlo.png)
 
 ## Run it
 
