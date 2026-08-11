@@ -18,13 +18,13 @@ suite, and the app opens preloaded with a real three-year sample
 
 ## Key components
 
-| | Section | What it does — and how it's built |
+| | Section | What it does and why |
 |---|---|---|
-| 1 | **Summary metrics** | Eight headline stats computed live from the loaded returns: total and CAGR return, Sharpe, Sortino, annualized volatility, max drawdown, CAPM beta and alpha. Sortino uses full-sample downside deviation (not the down-days-only shortcut that inflates it), and degenerate inputs render as "—" instead of crashing or showing inf |
-| 2 | **Portfolio performance** | Compounds daily returns into the growth of $1 — the order-independent product, not the sum — for portfolio and benchmark on one axis, with best/worst-day callouts. Normalizing both series to $1 makes the comparison leverage- and scale-fair |
-| 3 | **Risk through time** | Drawdown measured against a running peak that includes the starting dollar, so a first-day loss already counts; rolling volatility and Sharpe over a user-selectable 30/60/90-day window, with strict full windows only — the first window−1 days are deliberately blank rather than showing partial-window artifacts |
-| 4 | **Benchmark analysis** | CAPM as closed-form covariance algebra written out by hand — slope = Cov/Var, intercept, correlation, R² — no regression library in the source. The test suite proves it matches `scipy.stats.linregress` to 1e-12 |
-| 5 | **Monte Carlo** | Fits Normal(μ̂, σ̂²) to the observed returns, simulates 10,000 same-length histories, and scores each with the exact same Sharpe function as the headline metric. Seeded for reproducibility and cached for responsiveness; on the bundled 3-year sample the simulated Sharpes spread with std ≈ 0.58 — the headline Sharpe is a noisy estimate, and this section shows by how much |
+| 1 | **Summary metrics** | The two metric rows summarize the whole analysis at a glance: total return, annualized (CAGR) return, Sharpe, Sortino, annualized volatility, maximum drawdown, beta, and alpha, all computed live from the loaded returns. The Sortino ratio uses full-sample downside deviation rather than the down-days-only variant that inflates the ratio. |
+| 2 | **Portfolio performance** | The equity curve shows whether the portfolio made money and how that compares to the benchmark. It compounds daily returns into the growth of $1 (a product of returns, not a sum) and plots both series from the same starting dollar so the comparison is fair at any scale. The best and worst single days are called out below the chart. |
+| 3 | **Risk through time** | This section shows what the ride felt like rather than just its average. The drawdown chart measures losses against a running peak that includes the starting dollar, so a first-day loss already counts. Rolling volatility and rolling Sharpe recompute risk inside a user-selectable 30/60/90-day window, using strict full windows only, so partial-window artifacts never appear. |
+| 4 | **Benchmark analysis** | The CAPM regression answers whether performance came from skill or from market exposure. Correlation, beta, R², and alpha are computed as closed-form covariance algebra written out by hand, with no regression library in the source code. The test suite proves the results match `scipy.stats.linregress` to a tolerance of 1e-12. |
+| 5 | **Monte Carlo** | This section measures how much the headline Sharpe ratio can be trusted. It fits a normal distribution to the observed returns, simulates 10,000 histories of the same length, and scores each one with the exact same Sharpe function used for the headline metric. On the bundled three-year sample the simulated Sharpes have a standard deviation of about 0.58, which quantifies how noisy the estimate is. |
 
 The order is deliberate: returns first, then the risk taken to earn them, then
 how much of the result the benchmark explains, then how much sampling noise
