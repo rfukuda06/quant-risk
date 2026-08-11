@@ -18,23 +18,18 @@ suite, and the app opens preloaded with a real three-year sample
 
 ## Key components
 
-| | Section | What it shows |
+| | Section | What it does — and how it's built |
 |---|---|---|
-| 1 | **Summary metrics** | Total & annualized (CAGR) return, Sharpe, Sortino, volatility, max drawdown, beta, alpha — the whole report at a glance before the sections below unpack it |
-| 2 | **Portfolio performance** | The equity curve compounds daily returns into the growth of $1, portfolio vs benchmark, with best/worst-day callouts — did it make money, and against what? |
-| 3 | **Risk through time** | Drawdown tracks realized peak-to-trough losses — the pain volatility alone can't show — while rolling volatility and rolling Sharpe reveal that risk and risk-adjusted performance change through time |
-| 4 | **Benchmark analysis** | A hand-rolled CAPM regression splits returns into market-driven and unexplained parts (correlation, beta, R², alpha) — was the performance skill, or just market exposure? |
-| 5 | **Monte Carlo** | Simulates 10,000 alternate same-length return histories to build the sampling distribution of the Sharpe ratio — how different the measured Sharpe could have looked by luck alone |
+| 1 | **Summary metrics** | Eight headline stats computed live from the loaded returns: total and CAGR return, Sharpe, Sortino, annualized volatility, max drawdown, CAPM beta and alpha. Sortino uses full-sample downside deviation (not the down-days-only shortcut that inflates it), and degenerate inputs render as "—" instead of crashing or showing inf |
+| 2 | **Portfolio performance** | Compounds daily returns into the growth of $1 — the order-independent product, not the sum — for portfolio and benchmark on one axis, with best/worst-day callouts. Normalizing both series to $1 makes the comparison leverage- and scale-fair |
+| 3 | **Risk through time** | Drawdown measured against a running peak that includes the starting dollar, so a first-day loss already counts; rolling volatility and Sharpe over a user-selectable 30/60/90-day window, with strict full windows only — the first window−1 days are deliberately blank rather than showing partial-window artifacts |
+| 4 | **Benchmark analysis** | CAPM as closed-form covariance algebra written out by hand — slope = Cov/Var, intercept, correlation, R² — no regression library in the source. The test suite proves it matches `scipy.stats.linregress` to 1e-12 |
+| 5 | **Monte Carlo** | Fits Normal(μ̂, σ̂²) to the observed returns, simulates 10,000 same-length histories, and scores each with the exact same Sharpe function as the headline metric. Seeded for reproducibility and cached for responsiveness; on the bundled 3-year sample the simulated Sharpes spread with std ≈ 0.58 — the headline Sharpe is a noisy estimate, and this section shows by how much |
 
-The order is deliberate: each section answers the question the previous one
-leaves open. A return chart can't say what the ride cost, so risk metrics
-follow; risk can't say whether returns were earned or simply borrowed from
-market exposure, so the CAPM decomposition follows; and even alpha and Sharpe
-are point estimates on one finite sample, so the dashboard closes by measuring
-how much sampling luck alone could move them. That last step is the project's
-purpose in miniature — not just computing standard portfolio metrics, but
-hand-building each one, knowing exactly what it assumes, and being honest
-about how much confidence the numbers deserve. Upstream of it all, a
+The order is deliberate: returns first, then the risk taken to earn them, then
+how much of the result the benchmark explains, then how much sampling noise
+sits in the estimates. Every metric is written from scratch, tested against
+independent references, and displayed with its assumptions stated. A
 validation layer vets every CSV (required columns, unique parseable dates,
 decimal-scale values, ≥ 60 rows) before any metric runs.
 
