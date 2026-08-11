@@ -8,6 +8,10 @@ Every formula (CAGR, volatility, Sharpe, Sortino, drawdown, CAPM beta/alpha/R²,
 the Monte Carlo simulation) is implemented explicitly in numpy/pandas —
 scipy appears only in the test suite as an independent cross-check.
 
+![Dashboard — summary metrics and equity curve](docs/screenshots/dashboard-overview.png)
+
+![Monte Carlo Sharpe sampling-uncertainty section](docs/screenshots/monte-carlo.png)
+
 ## Run it
 
 ```bash
