@@ -1,18 +1,12 @@
 # Quantitative Risk & Performance Analyzer
 
-A fully hand-rolled quantitative finance tool: upload a CSV of daily portfolio
-and benchmark returns and get a complete risk and performance report — how the
-portfolio grew, how much risk it took along the way, how much of the result is
-explained by market exposure, and how much confidence the headline numbers
-actually deserve — in an interactive Streamlit dashboard.
-
-Every formula (CAGR, volatility, Sharpe, Sortino, drawdown, CAPM beta/alpha/R²,
-the Monte Carlo simulation) is implemented explicitly in numpy/pandas rather
-than imported from a finance library — scipy appears only in the test suite as
-an independent cross-check. Each dashboard section carries an expander
-explaining the math it displays, and the app opens preloaded with a real
-three-year sample (an AAPL/MSFT/NVDA/AMZN equal-weight portfolio against SPY,
-2022–2024), so everything in the screenshots below is live output.
+A hand-rolled quantitative finance tool: upload a CSV of daily portfolio and
+benchmark returns and get an interactive Streamlit dashboard covering
+performance, risk, benchmark exposure, and the statistical uncertainty behind
+the headline numbers. Every formula is implemented from scratch in
+numpy/pandas and cross-checked against independent references in the test
+suite, and the app opens preloaded with a real three-year sample
+(AAPL/MSFT/NVDA/AMZN equal-weight vs SPY, 2022–2024).
 
 **[▶ Try the live demo](https://rfukuda06-quant-risk-app-r2epvs.streamlit.app/)** — no setup required.
 
@@ -24,20 +18,25 @@ three-year sample (an AAPL/MSFT/NVDA/AMZN equal-weight portfolio against SPY,
 
 ## Key components
 
-The dashboard is a chain of questions — each section answers something the
-previous one cannot:
+| | Section | What it shows |
+|---|---|---|
+| 1 | **Summary metrics** | Total & annualized (CAGR) return, Sharpe, Sortino, volatility, max drawdown, beta, alpha — the whole report at a glance before the sections below unpack it |
+| 2 | **Portfolio performance** | The equity curve compounds daily returns into the growth of $1, portfolio vs benchmark, with best/worst-day callouts — did it make money, and against what? |
+| 3 | **Risk through time** | Drawdown tracks realized peak-to-trough losses — the pain volatility alone can't show — while rolling volatility and rolling Sharpe reveal that risk and risk-adjusted performance change through time |
+| 4 | **Benchmark analysis** | A hand-rolled CAPM regression splits returns into market-driven and unexplained parts (correlation, beta, R², alpha) — was the performance skill, or just market exposure? |
+| 5 | **Monte Carlo** | Simulates 10,000 alternate same-length return histories to build the sampling distribution of the Sharpe ratio — how different the measured Sharpe could have looked by luck alone |
 
-| | Section | Question it answers | What's computed |
-|---|---|---|---|
-| 1 | **Summary metrics** | The headlines, at a glance | Total & annualized (CAGR) return, Sharpe, Sortino, volatility, max drawdown, beta, alpha |
-| 2 | **Portfolio performance** | Did it make money? | Equity curve — growth of $1, portfolio vs benchmark — plus best/worst day |
-| 3 | **Risk through time** | What did the ride look like? | Drawdown (realized peak-to-trough loss), rolling volatility, rolling Sharpe |
-| 4 | **Benchmark analysis** | Skill, or just market exposure? | Hand-rolled CAPM: correlation, beta, R², and alpha (the return the market can't explain) |
-| 5 | **Monte Carlo** | How much should you trust these numbers? | 10,000 simulated same-length histories → the sampling distribution of the Sharpe ratio |
-
-Upstream of all five, a validation layer vets every CSV — required columns,
-unique parseable dates, decimal-scale values, ≥ 60 rows — before any metric
-is computed.
+The order is deliberate: each section answers the question the previous one
+leaves open. A return chart can't say what the ride cost, so risk metrics
+follow; risk can't say whether returns were earned or simply borrowed from
+market exposure, so the CAPM decomposition follows; and even alpha and Sharpe
+are point estimates on one finite sample, so the dashboard closes by measuring
+how much sampling luck alone could move them. That last step is the project's
+purpose in miniature — not just computing standard portfolio metrics, but
+hand-building each one, knowing exactly what it assumes, and being honest
+about how much confidence the numbers deserve. Upstream of it all, a
+validation layer vets every CSV (required columns, unique parseable dates,
+decimal-scale values, ≥ 60 rows) before any metric runs.
 
 ## Tests
 
