@@ -1,6 +1,6 @@
 # Quantitative Risk & Performance Analyzer
 
-A hand-rolled quantitative finance tool: upload a CSV of daily portfolio and
+This is a hand-rolled quantitative finance tool: upload a CSV of daily portfolio and
 benchmark returns and get an interactive Streamlit dashboard covering
 performance, risk, benchmark exposure, and the statistical uncertainty behind
 the headline numbers. Every formula is implemented from scratch in
@@ -8,7 +8,7 @@ numpy/pandas and cross-checked against independent references in the test
 suite, and the app opens preloaded with a real three-year sample
 (AAPL/MSFT/NVDA/AMZN equal-weight vs SPY, 2022–2024).
 
-**[▶ Try the live demo](https://rfukuda06-quant-risk-app-r2epvs.streamlit.app/)** — no setup required.
+**[▶ Live Demo](https://rfukuda06-quant-risk-app-r2epvs.streamlit.app/)**.
 
 ![Dashboard overview — summary metrics and equity curve](docs/screenshots/dashboard-overview.png)
 
@@ -18,7 +18,7 @@ suite, and the app opens preloaded with a real three-year sample
 
 ## Key components
 
-| | Section | What it does and why |
+| | Section | Method and Rationale |
 |---|---|---|
 | 1 | **Summary metrics** | Two rows of headline statistics summarize the full analysis: total return, annualized (CAGR) return, Sharpe ratio, Sortino ratio, annualized volatility, maximum drawdown, beta, and alpha, all computed directly from the loaded return series. The Sortino ratio uses full-sample downside deviation rather than the down-days-only variant, which understates the denominator and inflates the ratio. |
 | 2 | **Portfolio performance** | The equity curve measures cumulative performance relative to the benchmark. Daily returns are compounded multiplicatively into the value of $1 invested (Vₜ = Vₜ₋₁(1 + rₜ)), and both series are normalized to the same initial value so relative performance is comparable across scales. The largest single-day gain and loss are reported below the chart. |
