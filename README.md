@@ -1,4 +1,4 @@
-# Quantitative Risk & Performance Analyzer
+# Portfolio Analytics Dashboard
 
 This is a hand-rolled quantitative finance tool: upload a CSV of daily portfolio and
 benchmark returns and get an interactive Streamlit dashboard covering
