@@ -23,7 +23,7 @@ suite, and the app opens preloaded with a real three-year sample
 | 1 | **Summary metrics** | Two rows of headline statistics summarize the full analysis: total return, annualized (CAGR) return, Sharpe ratio, Sortino ratio, annualized volatility, maximum drawdown, beta, and alpha, all computed directly from the loaded return series. The Sortino ratio uses full-sample downside deviation rather than the down-days-only variant, which understates the denominator and inflates the ratio. |
 | 2 | **Portfolio performance** | The equity curve measures cumulative performance relative to the benchmark. Daily returns are compounded multiplicatively into the value of $1 invested (Vₜ = Vₜ₋₁(1 + rₜ)), and both series are normalized to the same initial value so relative performance is comparable across scales. The largest single-day gain and loss are reported below the chart. |
 | 3 | **Risk through time** | This section characterizes the time profile of risk rather than a single summary number. Drawdown is computed against a running maximum that includes the initial value, so a loss on the first observation registers immediately. Rolling volatility and rolling Sharpe are recomputed over a user-selectable 30/60/90-day window using complete windows only, which eliminates partial-window artifacts. |
-| 4 | **Benchmark analysis** | A CAPM regression decomposes portfolio returns into benchmark-driven and residual components. Correlation, beta, R², and alpha are derived in closed form from hand-written covariance expressions, with no regression library in the source code; the test suite verifies agreement with `scipy.stats.linregress` to a tolerance of 1e-12. |
+| 4 | **Benchmark analysis** | A CAPM regression decomposes portfolio returns into benchmark-driven and residual components. Correlation, beta, R², and alpha are derived in closed form from hand-written covariance expressions, with no regression library in the source code. The test suite verifies agreement with `scipy.stats.linregress` to a tolerance of 1e-12. |
 | 5 | **Monte Carlo** | This section quantifies the sampling uncertainty of the Sharpe ratio estimate. A normal distribution is fit to the observed returns, 10,000 histories of equal length are simulated, and each is scored with the same Sharpe implementation used for the headline metric. On the bundled three-year sample the simulated Sharpe ratios have a standard deviation of approximately 0.58. |
 
 The order is deliberate: returns first, then the risk taken to earn them, then
@@ -46,7 +46,7 @@ The 54-test suite works in three layers:
   worked examples (+10% then −10% must equal exactly −1%), so a wrong sign,
   a ddof slip, or a bad annualization fails immediately.
 - **Independent referees** — the hand-rolled CAPM and correlation are compared
-  against `scipy.stats.linregress` and `np.corrcoef` at 1e-12 tolerance; the
+  against `scipy.stats.linregress` and `np.corrcoef` at 1e-12 tolerance. The
   math must agree with libraries the source code never imports.
 - **Behavioral and end-to-end** — edge cases (zero volatility → NaN, never
   inf; malformed CSVs → clean user-facing errors; seeded Monte Carlo
@@ -57,7 +57,7 @@ The 54-test suite works in three layers:
 ## Input format
 
 The app works out of the box with a bundled default dataset
-(AAPL/MSFT/NVDA/AMZN equal-weight vs SPY, 2022–2024); upload your own CSV in
+(AAPL/MSFT/NVDA/AMZN equal-weight vs SPY, 2022–2024). Upload your own CSV in
 the sidebar to analyze your data instead. The file needs:
 
 | column | meaning |
